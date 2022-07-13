@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { AlbumService } from 'src/album/album.service';
 import { ArtistService } from 'src/artist/artist.service';
 import { InMemoryDB } from 'src/db/InMemoryDB';
+import { FavoritesService } from 'src/favorites/favorites.service';
 import { v4 } from 'uuid';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
@@ -16,17 +17,13 @@ export class TrackService {
     private artistService: ArtistService,
     @Inject(forwardRef(() => AlbumService))
     private albumService: AlbumService,
+    @Inject(forwardRef(() => FavoritesService))
+    private favoritesService: FavoritesService,
   ) {
     TrackService.db = new InMemoryDB<Track>(Track);
   }
 
   async create(createTrackDto: CreateTrackDto) {
-    createTrackDto.artistId &&
-      (await this.artistService.findOne(createTrackDto.artistId));
-
-    createTrackDto.albumId &&
-      (await this.albumService.findOne(createTrackDto.albumId));
-
     const data = {
       id: v4(),
       ...createTrackDto,
@@ -44,16 +41,10 @@ export class TrackService {
   }
 
   async update(id: string, updateTrackDto: UpdateTrackDto) {
-    updateTrackDto.artistId &&
-      (await this.artistService.findOne(updateTrackDto.artistId));
-
-    updateTrackDto.albumId &&
-      (await this.albumService.findOne(updateTrackDto.albumId));
-
-    const artist = await this.findOne(id);
+    const track = await this.findOne(id);
 
     const data = {
-      ...artist,
+      ...track,
       ...updateTrackDto,
     };
 
@@ -61,7 +52,7 @@ export class TrackService {
   }
 
   async remove(id: string) {
-    await this.findOne(id);
+    this.favoritesService.removeTrackToFavourites(id);
     return TrackService.db.remove(id);
   }
 }

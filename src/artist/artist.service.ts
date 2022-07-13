@@ -1,6 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { AlbumService } from 'src/album/album.service';
 import { InMemoryDB } from 'src/db/InMemoryDB';
+import { FavoritesService } from 'src/favorites/favorites.service';
 import { TrackService } from 'src/track/track.service';
 import { v4 } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
@@ -16,6 +17,8 @@ export class ArtistService {
     private albumService: AlbumService,
     @Inject(forwardRef(() => TrackService))
     private trackService: TrackService,
+    @Inject(forwardRef(() => FavoritesService))
+    private favoritesService: FavoritesService,
   ) {
     ArtistService.db = new InMemoryDB<Artist>(Artist);
   }
@@ -33,7 +36,7 @@ export class ArtistService {
     return ArtistService.db.findAll();
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     return ArtistService.db.findOne(id);
   }
 
@@ -49,7 +52,6 @@ export class ArtistService {
   }
 
   async remove(id: string) {
-    await this.findOne(id);
     const albums = await this.albumService.findAll();
     const tracks = await this.trackService.findAll();
 
@@ -65,6 +67,7 @@ export class ArtistService {
       this.trackService.update(track.id, { ...track, artistId: null });
     }
 
+    this.favoritesService.removeArtistToFavourites(id);
     return ArtistService.db.remove(id);
   }
 }

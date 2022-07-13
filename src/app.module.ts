@@ -5,9 +5,10 @@ import { ArtistModule } from './artist/artist.module';
 import { AlbumModule } from './album/album.module';
 import { TrackModule } from './track/track.module';
 import { UserModule } from './user/user.module';
+import { FavoritesModule } from './favorites/favorites.module';
 
 @Module({
-  imports: [UserModule, ArtistModule, AlbumModule, TrackModule],
+  imports: [UserModule, ArtistModule, AlbumModule, TrackModule, FavoritesModule],
   controllers: [AppController],
   providers: [AppService],
 })
