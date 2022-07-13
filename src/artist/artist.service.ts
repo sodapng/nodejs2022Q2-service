@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { AlbumService } from 'src/album/album.service';
 import { InMemoryDB } from 'src/db/InMemoryDB';
 import { v4 } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
@@ -9,7 +10,10 @@ import { Artist } from './entities/artist.entity';
 export class ArtistService {
   private static db: InMemoryDB<Artist>;
 
-  constructor() {
+  constructor(
+    @Inject(forwardRef(() => AlbumService))
+    private albumService: AlbumService,
+  ) {
     ArtistService.db = new InMemoryDB<Artist>(Artist);
   }
 
@@ -43,6 +47,14 @@ export class ArtistService {
 
   async remove(id: string) {
     await this.findOne(id);
+    const albums = await this.albumService.findAll();
+
+    for (const album of albums) {
+      if (album.artistId !== id) continue;
+
+      this.albumService.update(album.id, { ...album, artistId: null });
+    }
+
     return ArtistService.db.remove(id);
   }
 }

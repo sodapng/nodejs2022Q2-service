@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ArtistService } from 'src/artist/artist.service';
 import { InMemoryDB } from 'src/db/InMemoryDB';
 import { v4 } from 'uuid';
@@ -10,7 +10,10 @@ import { Album } from './entities/album.entity';
 export class AlbumService {
   private static db: InMemoryDB<Album>;
 
-  constructor(private readonly artistService: ArtistService) {
+  constructor(
+    @Inject(forwardRef(() => ArtistService))
+    private artistService: ArtistService,
+  ) {
     AlbumService.db = new InMemoryDB<Album>(Album);
   }
 
