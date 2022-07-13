@@ -7,16 +7,20 @@ import {
 } from 'class-validator';
 import { isNull } from 'lodash';
 
-export class CreateAlbumDto {
+export class CreateTrackDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsNumber()
-  @IsNotEmpty()
-  year: number;
+  @ValidateIf((_, value) => !isNull(value))
+  @IsUUID()
+  artistId: string | null;
 
   @ValidateIf((_, value) => !isNull(value))
-  @IsUUID('4')
-  artistId: string | null;
+  @IsUUID()
+  albumId: string | null;
+
+  @IsNumber()
+  @IsNotEmpty()
+  duration: number;
 }
