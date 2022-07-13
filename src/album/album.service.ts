@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ArtistService } from 'src/artist/artist.service';
 import { InMemoryDB } from 'src/db/InMemoryDB';
 import { v4 } from 'uuid';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -7,30 +8,37 @@ import { Album } from './entities/album.entity';
 
 @Injectable()
 export class AlbumService {
-  private db: InMemoryDB<Album>;
+  private static db: InMemoryDB<Album>;
 
-  constructor() {
-    this.db = new InMemoryDB<Album>(Album);
+  constructor(private readonly artistService: ArtistService) {
+    AlbumService.db = new InMemoryDB<Album>(Album);
   }
 
-  create(createAlbumDto: CreateAlbumDto) {
+  async create(createAlbumDto: CreateAlbumDto) {
+    createAlbumDto.artistId &&
+      (await this.artistService.findOne(createAlbumDto.artistId));
+
     const data = {
       id: v4(),
+      artistId: createAlbumDto.artistId ? createAlbumDto.artistId : null,
       ...createAlbumDto,
     };
 
-    return this.db.create(data);
+    return AlbumService.db.create(data);
   }
 
   async findAll() {
-    return this.db.findAll();
+    return AlbumService.db.findAll();
   }
 
   findOne(id: string) {
-    return this.db.findOne(id);
+    return AlbumService.db.findOne(id);
   }
 
   async update(id: string, updateAlbumDto: UpdateAlbumDto) {
+    updateAlbumDto.artistId &&
+      (await this.artistService.findOne(updateAlbumDto.artistId));
+
     const album = await this.findOne(id);
 
     const data = {
@@ -38,11 +46,11 @@ export class AlbumService {
       ...updateAlbumDto,
     };
 
-    return this.db.update(id, data);
+    return AlbumService.db.update(id, data);
   }
 
   async remove(id: string) {
     await this.findOne(id);
-    return this.db.remove(id);
+    return AlbumService.db.remove(id);
   }
 }
