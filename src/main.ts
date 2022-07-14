@@ -6,19 +6,25 @@ import { resolve } from 'path';
 import { cwd } from 'process';
 import { parse } from 'yaml';
 import { AppModule } from './app.module';
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: resolve(cwd(), '.env') });
 
 async function bootstrap() {
+  const port = process.env.PORT || 4000;
   const app = await NestFactory.create(AppModule);
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-  app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
-  );
 
   const document = await readFile(resolve(cwd(), 'doc', 'api.yaml'), {
     encoding: 'utf8',
   });
 
+  app
+    .useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
+    .useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
+
   SwaggerModule.setup('doc', app, parse(document));
-  await app.listen(4000);
+  await app.listen(port);
 }
 bootstrap();
