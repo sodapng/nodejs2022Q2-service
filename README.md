@@ -1,5 +1,29 @@
 # Home Library Service
 
+## Docker Compose
+
+- Docker Hub - [nodejs2022q2-service_api](https://hub.docker.com/r/sodapng/nodejs2022q2-service_api)
+
+```
+docker compose -f "docker-compose.yaml" up --build
+```
+
+## Dockerfile `build` and `run`
+
+Build `Dockerfile` for `DB`
+
+```
+docker build --pull --rm -f "db/Dockerfile" -t nodejs2022q2service_db:latest "."
+docker run --env-file .env --rm -it -p 5432:5432/tcp nodejs2022q2service_db:latest
+```
+
+Build `Dockerfile` for `API`
+
+```
+docker build --pull --rm -f "Dockerfile" -t nodejs2022q2service_api:latest "."
+docker run --env-file .env --rm -it -p 4000:4000/tcp nodejs2022q2service_api:latest
+```
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
