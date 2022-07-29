@@ -4,9 +4,9 @@ import {
   Injectable,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { AlbumService } from 'src/album/album.service';
-import { ArtistService } from 'src/artist/artist.service';
-import { TrackService } from 'src/track/track.service';
+import { AlbumService } from '../album/album.service';
+import { ArtistService } from '../artist/artist.service';
+import { TrackService } from '../track/track.service';
 import { Favorite } from './entities/favorite.entity';
 
 @Injectable()

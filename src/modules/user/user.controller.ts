@@ -58,7 +58,7 @@ export class UserController {
         error: 'Forbidden',
       });
 
-    return this.userService.update(id, updateUserDto, user);
+    return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')

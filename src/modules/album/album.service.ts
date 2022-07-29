@@ -1,8 +1,8 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { ArtistService } from 'src/artist/artist.service';
+import { ArtistService } from '../artist/artist.service';
 import { InMemoryDB } from 'src/db/InMemoryDB';
-import { FavoritesService } from 'src/favorites/favorites.service';
-import { TrackService } from 'src/track/track.service';
+import { FavoritesService } from '../favorites/favorites.service';
+import { TrackService } from '../track/track.service';
 import { v4 } from 'uuid';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
