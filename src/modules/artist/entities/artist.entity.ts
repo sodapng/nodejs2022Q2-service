@@ -1,9 +1,12 @@
-export class Artist {
-  id: string;
-  name: string;
-  grammy: boolean;
+import { Column, PrimaryGeneratedColumn } from 'typeorm';
 
-  constructor(partial: Partial<Artist>) {
-    Object.assign(this, partial);
-  }
+export class Artist {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
+  name: string;
+
+  @Column()
+  grammy: boolean;
 }
