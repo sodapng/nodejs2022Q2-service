@@ -8,6 +8,12 @@
 docker compose -f "docker-compose.yaml" up --build
 ```
 
+- `Docker Scan`
+
+```
+npm run docker:scan
+```
+
 ## Dockerfile `build` and `run`
 
 Build `Dockerfile` for `DB`
