@@ -40,7 +40,7 @@ docker run --env-file .env --rm -it -p 4000:4000/tcp nodejs2022q2service_api:lat
 ```
 git clone {repository URL}
 cd nodejs2022Q2-service
-git checkout dev
+git checkout docker
 ```
 
 ## Installing NPM modules
