@@ -4,5 +4,5 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run prisma:generate
-EXPOSE ${PORT}
+# EXPOSE ${PORT}
 CMD [ "npm", "run", "start:dev"]

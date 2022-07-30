@@ -1,2 +1,2 @@
 FROM postgres:alpine
-EXPOSE ${POSTGRES_PORT}
+# EXPOSE ${POSTGRES_PORT}
