@@ -8,6 +8,12 @@
 docker compose -f "docker-compose.yaml" up --build
 ```
 
+- `Docker Scan`
+
+```
+npm run docker:scan
+```
+
 ## Dockerfile `build` and `run`
 
 Build `Dockerfile` for `DB`
@@ -34,7 +40,7 @@ docker run --env-file .env --rm -it -p 4000:4000/tcp nodejs2022q2service_api:lat
 ```
 git clone {repository URL}
 cd nodejs2022Q2-service
-git checkout dev
+git checkout db
 ```
 
 ## Installing NPM modules
