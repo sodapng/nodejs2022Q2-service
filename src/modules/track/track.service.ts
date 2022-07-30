@@ -1,58 +1,36 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AlbumService } from '../album/album.service';
-import { ArtistService } from '../artist/artist.service';
-import { InMemoryDB } from 'src/db/InMemoryDB';
-import { FavoritesService } from '../favorites/favorites.service';
-import { v4 } from 'uuid';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
 
 @Injectable()
 export class TrackService {
-  private static db: InMemoryDB<Track>;
-
   constructor(
-    @Inject(forwardRef(() => ArtistService))
-    private artistService: ArtistService,
-    @Inject(forwardRef(() => AlbumService))
-    private albumService: AlbumService,
-    @Inject(forwardRef(() => FavoritesService))
-    private favoritesService: FavoritesService,
-  ) {
-    TrackService.db = new InMemoryDB<Track>(Track);
-  }
+    @InjectRepository(Track)
+    private tracksRepository: Repository<Track>,
+  ) {}
 
   async create(createTrackDto: CreateTrackDto) {
-    const data = {
-      id: v4(),
-      ...createTrackDto,
-    };
-
-    return TrackService.db.create(data);
+    const track = this.tracksRepository.create(createTrackDto);
+    return this.tracksRepository.save(track);
   }
 
   async findAll() {
-    return TrackService.db.findAll();
+    return this.tracksRepository.find();
   }
 
   async findOne(id: string) {
-    return TrackService.db.findOne(id);
+    return this.tracksRepository.findOneBy({ id });
   }
 
   async update(id: string, updateTrackDto: UpdateTrackDto) {
-    const track = await this.findOne(id);
-
-    const data = {
-      ...track,
-      ...updateTrackDto,
-    };
-
-    return TrackService.db.update(id, data);
+    await this.tracksRepository.update(id, updateTrackDto);
+    return this.findOne(id);
   }
 
   async remove(id: string) {
-    this.favoritesService.removeTrackToFavourites(id);
-    return TrackService.db.remove(id);
+    return this.tracksRepository.delete({ id });
   }
 }

@@ -1,66 +1,36 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { ArtistService } from '../artist/artist.service';
-import { InMemoryDB } from 'src/db/InMemoryDB';
-import { FavoritesService } from '../favorites/favorites.service';
-import { TrackService } from '../track/track.service';
-import { v4 } from 'uuid';
+import { Injectable } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AlbumService {
-  private static db: InMemoryDB<Album>;
-
   constructor(
-    @Inject(forwardRef(() => ArtistService))
-    private artistService: ArtistService,
-    @Inject(forwardRef(() => TrackService))
-    private trackService: TrackService,
-    @Inject(forwardRef(() => FavoritesService))
-    private favoritesService: FavoritesService,
-  ) {
-    AlbumService.db = new InMemoryDB<Album>(Album);
-  }
+    @InjectRepository(Album)
+    private albumsRepository: Repository<Album>,
+  ) {}
 
   async create(createAlbumDto: CreateAlbumDto) {
-    const data = {
-      id: v4(),
-      ...createAlbumDto,
-    };
-
-    return AlbumService.db.create(data);
+    const album = this.albumsRepository.create(createAlbumDto);
+    return this.albumsRepository.save(album);
   }
 
   async findAll() {
-    return AlbumService.db.findAll();
+    return this.albumsRepository.find();
   }
 
   async findOne(id: string) {
-    return AlbumService.db.findOne(id);
+    return this.albumsRepository.findOneBy({ id });
   }
 
   async update(id: string, updateAlbumDto: UpdateAlbumDto) {
-    const album = await this.findOne(id);
-
-    const data = {
-      ...album,
-      ...updateAlbumDto,
-    };
-
-    return AlbumService.db.update(id, data);
+    await this.albumsRepository.update(id, updateAlbumDto);
+    return this.findOne(id);
   }
 
   async remove(id: string) {
-    const tracks = await this.trackService.findAll();
-
-    for (const track of tracks) {
-      if (track.albumId !== id) continue;
-
-      this.trackService.update(track.id, { ...track, albumId: null });
-    }
-
-    this.favoritesService.removeAlbumToFavourites(id);
-    return AlbumService.db.remove(id);
+    return this.albumsRepository.delete({ id });
   }
 }
