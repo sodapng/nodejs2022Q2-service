@@ -10,10 +10,10 @@ export class User {
 
   version: number;
 
-  @Transform(({ value }) => new Date(value).getTime())
+  @Transform(({ value }) => +`${new Date(value).getTime()}`.slice(0, 12))
   createdAt: Date;
 
-  @Transform(({ value }) => new Date(value).getTime())
+  @Transform(({ value }) => +`${new Date(value).getTime()}`.slice(0, 12))
   updatedAt: Date;
 
   constructor(partial: Partial<User>) {
